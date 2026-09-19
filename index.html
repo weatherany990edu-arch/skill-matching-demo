@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>專長清單與教學諮詢媒合</title>
+  <style>
+    /* =========================================
+       Notion 極簡風格 CSS
+       ========================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #37352f;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .notion-container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* 頂部標題 */
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-icon {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 700;
+      color: #37352f;
+      margin-bottom: 8px;
+    }
+
+    .page-desc {
+      font-size: 14px;
+      color: #787774;
+    }
+
+    /* 分類標籤按鈕 */
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: #f7f6f3;
+      border: 1px solid #e9e8e5;
+      border-radius: 4px;
+      padding: 5px 12px;
+      font-size: 13px;
+      color: #5a5a57;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      background: #eae8e3;
+    }
+
+    .tab-btn.active {
+      background: #37352f;
+      color: #ffffff;
+      border-color: #37352f;
+    }
+
+    /* 表格清單區塊 */
+    .table-section {
+      border: 1px solid #e9e8e5;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      background: #f7f6f3;
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #787774;
+      border-bottom: 1px solid #e9e8e5;
+    }
+
+    .col-name { flex: 2; }
+    .col-type { flex: 1.5; }
+    .col-action { flex: 1; text-align: right; }
+
+    .table-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid #f1f0ee;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .table-row:last-child {
+      border-bottom: none;
+    }
+
+    .table-row:hover {
+      background: #fbfbfa;
+    }
+
+    /* Notion 專長標籤顏色 */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-teaching   { background-color: #fbeee0; color: #b2501a; }
+    .badge-coding     { background-color: #e6f3eb; color: #1e6b3f; }
+    .badge-language   { background-color: #e5f0f9; color: #205c8a; }
+    .badge-docs       { background-color: #f2edf8; color: #623f8b; }
+    .badge-admin      { background-color: #faeedf; color: #885317; }
+    .badge-comm       { background-color: #e6f6f4; color: #1a6f67; }
+    .badge-sport      { background-color: #f1f1ef; color: #5a5a57; }
+    .badge-other      { background-color: #f6edf5; color: #7f3475; }
+
+    .select-btn {
+      background: transparent;
+      border: 1px solid #e0dfdb;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 12px;
+      color: #37352f;
+      cursor: pointer;
+    }
+
+    .select-btn:hover {
+      background: #37352f;
+      color: #ffffff;
+      border-color: #37352f;
+    }
+
+    /* 需求問卷區塊 */
+    .form-section {
+      background: #fcfcfb;
+      border: 1px solid #e9e8e5;
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .form-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-header p {
+      font-size: 13px;
+      color: #787774;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #37352f;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #e0dfdb;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #37352f;
+      background: #ffffff;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2eaadc;
+      box-shadow: 0 0 0 2px rgba(46, 170, 220, 0.2);
+    }
+
+    /* 程度選擇標籤 (Radio Chips) */
+    .radio-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      font-size: 13px;
+      background: #ffffff;
+      border: 1px solid #e0dfdb;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: #2eaadc;
+      color: white;
+      border: none;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s;
+    }
+
+    .submit-btn:hover {
+      background: #1b90c1;
+    }
+
+    /* AI 統整摘要結果 */
+    .ai-summary-box {
+      margin-top: 20px;
+      background: #f7f6f3;
+      border-left: 3px solid #37352f;
+      padding: 16px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .summary-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="notion-container">
+    
+    <!-- 頂部頁面標題 -->
+    <header class="page-header">
+      <div class="page-icon">📋</div>
+      <h1 class="page-title">專長清單與教學諮詢</h1>
+      <p class="page-desc">
+        點選你有興趣的項目，下方會自動帶入需求問卷。告訴我們你的困擾與欠缺的資源，我們會盡快進行媒合與聯絡。
+      </p>
+    </header>
+
+    <!-- 分類按鈕 -->
+    <div class="category-tabs" id="categoryTabs">
+      <button class="tab-btn active" data-category="全部">全部</button>
+      <button class="tab-btn" data-category="教學">教學</button>
+      <button class="tab-btn" data-category="程式設計">程式設計</button>
+      <button class="tab-btn" data-category="語言">語言</button>
+      <button class="tab-btn" data-category="文書處理">文書處理</button>
+      <button class="tab-btn" data-category="行政事務">行政事務</button>
+      <button class="tab-btn" data-category="溝通與表達">溝通與表達</button>
+      <button class="tab-btn" data-category="運動與健康">運動與健康</button>
+      <button class="tab-btn" data-category="其他">其他</button>
+    </div>
+
+    <!-- 專長清單 (Notion 表格風格) -->
+    <section class="table-section">
+      <div class="table-header">
+        <span class="col-name">專長名稱</span>
+        <span class="col-type">專長類型</span>
+        <span class="col-action">動作</span>
+      </div>
+      <div class="table-body" id="skillsList">
+        <!-- 由 JavaScript 動態產生清單項目 -->
+      </div>
+    </section>
+
+    <!-- 需求引導問卷區塊 -->
+    <section class="form-section" id="formSection">
+      <div class="form-header">
+        <h2>✏️ 提出你的教學 / 諮詢需求</h2>
+        <p>讓我們精準了解你的現況與欠缺的資源</p>
+      </div>
+
+      <form id="matchForm">
+        <div class="form-group">
+          <label for="skillInput">1. 想諮詢／學習的項目</label>
+          <input type="text" id="skillInput" placeholder="點選上方項目或自行輸入（如：Python、國中數學、健身）" required>
+        </div>
+
+        <div class="form-group">
+          <label>2. 目前程度與學習背景</label>
+          <div class="radio-chips">
+            <label class="chip"><input type="radio" name="level" value="零基礎" checked> 零基礎</label>
+            <label class="chip"><input type="radio" name="level" value="懂基本概念"> 懂基本概念</label>
+            <label class="chip"><input type="radio" name="level" value="進度卡關落後"> 進度卡關落後</label>
+            <label class="chip"><input type="radio" name="level" value="備考或專案中"> 備考或專案中</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="struggleInput">3. 目前最大的卡關點？欠缺什麼樣的資源？</label>
+          <textarea id="struggleInput" rows="3" placeholder="例如：自己看書看懂但不會動手寫；不知道怎麼規劃複習方向；需要專人每週檢視進度..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="frequencyInput">4. 期望的進行頻率或形式</label>
+          <input type="text" id="frequencyInput" placeholder="例如：每週線上 1 次、每次 2 小時、希望能幫忙改作業">
+        </div>
+
+        <div class="form-group">
+          <label for="contactInput">5. 稱呼與聯絡方式（LINE ID 或 Email）</label>
+          <input type="text" id="contactInput" placeholder="例如：林同學 / LINE: sample123" required>
+        </div>
+
+        <button type="submit" class="submit-btn">送出需求問卷</button>
+      </form>
+
+      <!-- 提交成功後的 AI 統整摘要卡片 (決策視角) -->
+      <div id="aiSummaryBox" class="ai-summary-box" style="display: none;">
+        <div class="summary-title">✨ AI 需求統整與決策建議</div>
+        <div class="summary-content" id="summaryContent"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- JavaScript 互動邏輯 -->
+  <script>
+    const skillsData = [
+      { name: "國中家教", category: "教學", badgeClass: "badge-teaching" },
+      { name: "高中家教", category: "教學", badgeClass: "badge-teaching" },
+      { name: "Python", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "C++", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "C", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "Java", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "VBA", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "資料庫", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "網頁開發", category: "程式設計", badgeClass: "badge-coding" },
+      { name: "英文", category: "語言", badgeClass: "badge-language" },
+      { name: "日文", category: "語言", badgeClass: "badge-language" },
+      { name: "Word", category: "文書處理", badgeClass: "badge-docs" },
+      { name: "簡報設計", category: "文書處理", badgeClass: "badge-docs" },
+      { name: "數據整理與統計", category: "行政事務", badgeClass: "badge-admin" },
+      { name: "代購", category: "其他", badgeClass: "badge-other" },
+      { name: "心理諮商", category: "溝通與表達", badgeClass: "badge-comm" },
+      { name: "聊天陪伴", category: "溝通與表達", badgeClass: "badge-comm" },
+      { name: "塔羅牌", category: "其他", badgeClass: "badge-other" },
+      { name: "旅遊規劃", category: "其他", badgeClass: "badge-other" },
+      { name: "行銷企劃", category: "其他", badgeClass: "badge-other" },
+      { name: "健身", category: "運動與健康", badgeClass: "badge-sport" },
+      { name: "籃球", category: "運動與健康", badgeClass: "badge-sport" },
+      { name: "攝影", category: "其他", badgeClass: "badge-other" }
+    ];
+
+    const skillsListEl = document.getElementById("skillsList");
+    const skillInput = document.getElementById("skillInput");
+    const matchForm = document.getElementById("matchForm");
+    const aiSummaryBox = document.getElementById("aiSummaryBox");
+    const summaryContent = document.getElementById("summaryContent");
+    const categoryTabs = document.querySelectorAll(".tab-btn");
+
+    function renderSkills(filterCategory = "全部") {
+      skillsListEl.innerHTML = "";
+      
+      const filtered = filterCategory === "全部" 
+        ? skillsData 
+        : skillsData.filter(item => item.category === filterCategory);
+
+      filtered.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "table-row";
+        row.innerHTML = `
+          <div class="col-name">${item.name}</div>
+          <div class="col-type"><span class="badge ${item.badgeClass}">${item.category}</span></div>
+          <div class="col-action">
+            <button class="select-btn" type="button" onclick="selectSkill('${item.name}')">選取 ➔</button>
+          </div>
+        `;
+        skillsListEl.appendChild(row);
+      });
+    }
+
+    function selectSkill(skillName) {
+      skillInput.value = skillName;
+      document.getElementById("formSection").scrollIntoView({ behavior: "smooth" });
+      skillInput.focus();
+    }
+
+    categoryTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        categoryTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        renderSkills(tab.dataset.category);
+      });
+    });
+
+    matchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const selectedLevel = document.querySelector('input[name="level"]:checked').value;
+      const targetSkill = skillInput.value;
+      const struggle = document.getElementById("struggleInput").value;
+      const frequency = document.getElementById("frequencyInput").value || "未指定";
+      const contact = document.getElementById("contactInput").value;
+
+      summaryContent.innerHTML = `
+        <p><strong>諮詢項目：</strong>${targetSkill}（程度：${selectedLevel}）</p>
+        <p><strong>學生痛點與卡關：</strong>${struggle}</p>
+        <p><strong>期望頻率／形式：</strong>${frequency}</p>
+        <p><strong>聯絡方式：</strong>${contact}</p>
+        <hr style="margin: 8px 0; border: none; border-top: 1px dashed #d3d1cb;">
+        <p style="color: #205c8a;"><strong>💡 AI 建議決策：</strong>針對學生的卡關問題「${struggle}」，建議指派具備耐心且著重觀念梳理的教學夥伴，優先安排 30 分鐘初次諮詢釐清進度與教材安排。</p>
+      `;
+
+      aiSummaryBox.style.display = "block";
+      aiSummaryBox.scrollIntoView({ behavior: "smooth" });
+    });
+
+    renderSkills();
+  </script>
+</body>
+</html>
